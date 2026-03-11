@@ -8,7 +8,7 @@ pipeline {
 
     // ── Auto-install Terraform via Jenkins Tool ──────────────────────────────
     tools {
-        terraform 'Terraform'   // matches the name you set in Jenkins Global Tools
+        terraform 'terraform'   // matches the name you set in Jenkins Global Tools
     }
 
     // ── Environment Variables (Azure credentials from Jenkins) ───────────────
