@@ -1,58 +1,40 @@
-# root/variables.tf
+# modules/vm/variables.tf
 
 variable "location" {
-  description = "Azure region"
+  description = "Azure region where resources will be created"
   type        = string
-  default     = "westus2"
 }
 
 variable "resource_group_name" {
-  description = "Name of the main resource group"
+  description = "Name of the resource group"
   type        = string
-  default     = "rg-tf-vms"
+}
+
+variable "subnet_id" {
+  description = "ID of the subnet where VMs will be deployed"
+  type        = string
 }
 
 variable "admin_username" {
-  description = "Admin username for VMs"
+  description = "Admin username for the virtual machines"
   type        = string
   default     = "azureuser"
 }
 
 variable "ssh_public_key" {
-  description = "SSH public key content for VM login"
+  description = "SSH public key for VM authentication"
   type        = string
-  # Do NOT hardcode this - pass via TF_VAR or Jenkins credentials
 }
 
-variable "common_tags" {
-  description = "Tags applied to all resources"
+variable "tags" {
+  description = "Tags to apply to all resources"
   type        = map(string)
-  default = {
-    project   = "ReusableModuleforAzureVM"
-    managedby = "terraform"
-  }
+  default     = {}
 }
 
-# ─── DEV VMs map (for_each) ───────────────────
-variable "dev_vms" {
-  description = "Map of dev VM configurations"
+variable "vms" {
+  description = "Map of VM configurations - used for for_each"
   type = map(object({
     vm_size = string
   }))
-  default = {
-    "dev-01" = { vm_size = "Standard_L2aos_v4" }
-    "dev-02" = { vm_size = "Standard_L2aos_v4" }
-  }
-}
-
-# ─── STAGING VMs map (for_each) ───────────────
-variable "staging_vms" {
-  description = "Map of staging VM configurations"
-  type = map(object({
-    vm_size = string
-  }))
-  default = {
-    "staging-01" = { vm_size = "Standard_L2aos_v4" }
-    "staging-02" = { vm_size = "Standard_L2aos_v4" }
-  }
 }
