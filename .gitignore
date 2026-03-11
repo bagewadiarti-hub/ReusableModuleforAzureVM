@@ -1,0 +1,26 @@
+# Terraform files - never commit these to GitHub
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+tfplan
+*.tfplan
+crash.log
+crash.*.log
+
+# Sensitive variable files - never commit
+*.tfvars
+!terraform.tfvars.example    # allow the example file only
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
