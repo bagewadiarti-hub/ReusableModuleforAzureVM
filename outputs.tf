@@ -1,25 +1,29 @@
-# modules/vm/outputs.tf
-
-output "vm_ids" {
-  description = "Map of VM names to their resource IDs"
-  value = {
-    for key, vm in azurerm_linux_virtual_machine.vm :
-    key => vm.id
-  }
+output "dev_vm_ids" {
+  description = "Dev VM resource IDs"
+  value       = module.dev_vms.vm_ids
 }
 
-output "private_ip_addresses" {
-  description = "Map of VM names to their private IP addresses"
-  value = {
-    for key, nic in azurerm_network_interface.vm_nic :
-    key => nic.private_ip_address
-  }
+output "dev_private_ips" {
+  description = "Dev VM private IP addresses"
+  value       = module.dev_vms.private_ip_addresses
 }
 
-output "public_ip_addresses" {
-  description = "Map of VM names to their public IP addresses"
-  value = {
-    for key, pip in azurerm_public_ip.vm_pip :
-    key => pip.ip_address
-  }
+output "dev_public_ips" {
+  description = "Dev VM public IP addresses"
+  value       = module.dev_vms.public_ip_addresses
+}
+
+output "staging_vm_ids" {
+  description = "Staging VM resource IDs"
+  value       = module.staging_vms.vm_ids
+}
+
+output "staging_private_ips" {
+  description = "Staging VM private IP addresses"
+  value       = module.staging_vms.private_ip_addresses
+}
+
+output "staging_public_ips" {
+  description = "Staging VM public IP addresses"
+  value       = module.staging_vms.public_ip_addresses
 }
