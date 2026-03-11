@@ -1,6 +1,5 @@
 // Jenkinsfile
 // CI/CD Pipeline - Auto installs Terraform, runs Init → Plan → Apply automatically
-// No manual parameters needed - just push to GitHub and pipeline runs!
 
 pipeline {
 
@@ -8,16 +7,17 @@ pipeline {
 
     // ── Auto-install Terraform via Jenkins Tool ──────────────────────────────
     tools {
-        terraform 'terraform'   // matches the name you set in Jenkins Global Tools
+        terraform 'terraform'   // matches the name set in Jenkins → Tools → Terraform
     }
 
     // ── Environment Variables (Azure credentials from Jenkins) ───────────────
+    // Credential IDs match exactly what is stored in Jenkins Credentials page
     environment {
-        ARM_CLIENT_ID           = credentials('AZURE_CLIENT_ID')
-        ARM_CLIENT_SECRET       = credentials('AZURE_CLIENT_SECRET')
-        ARM_SUBSCRIPTION_ID     = credentials('AZURE_SUBSCRIPTION_ID')
-        ARM_TENANT_ID           = credentials('AZURE_TENANT_ID')
-        TF_VAR_ssh_public_key   = credentials('SSH_PUBLIC_KEY')
+        ARM_CLIENT_ID           = credentials('azure-client-id')        // ← matches Jenkins ID
+        ARM_CLIENT_SECRET       = credentials('azure-client-secret')    // ← matches Jenkins ID
+        ARM_SUBSCRIPTION_ID     = credentials('azure-subscription-id')  // ← matches Jenkins ID
+        ARM_TENANT_ID           = credentials('azure-tenant-id')        // ← matches Jenkins ID
+        TF_VAR_ssh_public_key   = credentials('SSH_PUBLIC_KEY')         // ← matches Jenkins ID
     }
 
     stages {
@@ -58,7 +58,6 @@ pipeline {
         stage('Terraform Format Check') {
             steps {
                 echo '🎨 Checking Terraform code formatting...'
-                // -check flag: fails if formatting issues found (does not modify files)
                 bat 'terraform fmt -check -recursive'
             }
         }
@@ -71,7 +70,6 @@ pipeline {
             }
             post {
                 always {
-                    // Save plan file as Jenkins build artifact for reference
                     archiveArtifacts artifacts: 'tfplan', allowEmptyArchive: true
                 }
             }
@@ -81,7 +79,6 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 echo '🚀 Applying Terraform changes to Azure...'
-                // Uses the saved plan file - no prompt needed (-auto-approve)
                 bat 'terraform apply -input=false -auto-approve tfplan'
             }
         }
@@ -95,28 +92,24 @@ pipeline {
         }
     }
 
-    // ── Post-build Notifications ─────────────────────────────────────────────
+    // ── Post-build Actions ───────────────────────────────────────────────────
     post {
         success {
-            echo '''
-            ✅ Pipeline completed successfully!
-            ✅ All Azure VMs (dev + staging) are deployed.
-            ✅ Check outputs above for VM IDs and IP addresses.
-            '''
+            echo '✅ Pipeline completed! All Azure VMs (dev + staging) are deployed.'
         }
         failure {
             echo '''
-            ❌ Pipeline failed!
-            ❌ Check the stage logs above to find the error.
-            ❌ Common issues:
-               - Azure credentials not set in Jenkins
-               - Storage account name wrong in main.tf backend block
-               - Terraform fmt formatting errors in code
+            ❌ Pipeline failed! Common causes:
+               - Azure credentials missing or wrong ID names in Jenkins
+               - Wrong storage account name in main.tf backend block
+               - Terraform fmt formatting errors in .tf files
             '''
         }
         always {
-            echo '🧹 Pipeline finished. Cleaning workspace...'
-            cleanWs()
+            node('built-in') {
+                echo '🧹 Cleaning workspace...'
+                cleanWs()
+            }
         }
     }
 }
