@@ -11,9 +11,9 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "rg-terraform-state"
-    storage_account_name = "tfstateazublobtest123"   # Replace with your actual storage account
+    storage_account_name = "tfstateazublobtest123" # Replace with your actual storage account
     container_name       = "tfstate"
-    key                  = "exercise2/terraform.tfstate"  # Different key from Exercise 1
+    key                  = "exercise2/terraform.tfstate" # Different key from Exercise 1
   }
 }
 
@@ -60,7 +60,7 @@ module "dev_vms" {
   admin_username      = var.admin_username
   ssh_public_key      = var.ssh_public_key
 
-  vms = var.dev_vms   # map passed from variables
+  vms = var.dev_vms # map passed from variables
 
   tags = merge(var.common_tags, {
     environment = "dev"
@@ -79,7 +79,7 @@ module "staging_vms" {
   admin_username      = var.admin_username
   ssh_public_key      = var.ssh_public_key
 
-  vms = var.staging_vms   # different map for staging
+  vms = var.staging_vms # different map for staging
 
   tags = merge(var.common_tags, {
     environment = "staging"
